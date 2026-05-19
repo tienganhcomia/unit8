@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ms. Mia's English Class - Unit 8</title>
+    <style>
+        :root {
+            --bg-color: #fdf5e6;
+            --accent-color: #ff9a9e;
+            --text-color: #4a4a4a;
+            --highlight-color: #fff176;
+            --button-bg: #ffffff;
+            --active-button: #8ed1fc;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(#ffe4b5 10%, transparent 10%),
+                linear-gradient(135deg, #fdf5e6 0%, #ffecd2 100%);
+            background-size: 30px 30px, 100% 100%;
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        #sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        #logo-container {
+            position: sticky;
+            top: 0;
+            padding: 20px 10px;
+            text-align: center;
+            background: transparent;
+        }
+
+        #logo-container img {
+            max-width: 160px;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #d4a373;
+            text-align: center;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #button-list-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 15px 20px 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .story-btn {
+            width: 100%;
+            background: var(--button-bg);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .story-btn.active {
+            background: var(--active-button);
+            color: white;
+            border-color: #0693e3;
+        }
+
+        /* Main Reading Area */
+        #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .instruction {
+            text-align: center;
+            font-weight: bold;
+            color: #b5835a;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        #reading-box {
+            background: rgba(255, 255, 255, 0.92);
+            flex: 1;
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            line-height: 1.7;
+            font-size: 2.1rem;
+            overflow-y: auto;
+            border: 6px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .word {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 4px;
+            border-radius: 8px;
+            transition: background 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .word.playing {
+            background: var(--highlight-color) !important;
+            transform: scale(1.1);
+        }
+
+        /* Mobile Layout Adjustments */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 35vh;
+                border-right: none;
+                border-bottom: 2px solid white;
+            }
+            #logo-container { padding: 10px; }
+            #logo-container img { max-width: 100px; }
+            h2 { font-size: 1rem; margin: 0 0 5px 0; }
+            #button-list-wrapper {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 10px;
+                gap: 10px;
+            }
+            .story-btn {
+                width: auto;
+                white-space: nowrap;
+                margin-bottom: 0;
+                padding: 8px 12px;
+            }
+            #main-content { padding: 15px; }
+            #reading-box { font-size: 1.5rem; padding: 20px; border-radius: 20px; }
+            .instruction { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="sidebar">
+        <div id="logo-container">
+            <img src="logo.png" alt="Ms. Mia Logo">
+        </div>
+        <h2>Unit 8</h2>
+        <div id="button-list-wrapper">
+            <div id="button-list"></div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <div class="instruction">💻 Click a word | 📱 Double-tap a word</div>
+        <div id="reading-box"></div>
+    </main>
+
+    <script>
+        const stories = [
+            { title: "1. What Comes After 10?", text: "I know my numbers 1 through 10,\nbut what comes after 10?\nWe just write “1” before the number,\nand we count again…\n11, 12, 13, 14, 15, this is fun!\n16, 17, 18, 19, 20, and we’re done!" },
+            { title: "2. Guess Who?", text: "Who am I?\nTry to guess if you can.\nI put the mail in your mailbox.\nNow who do you think I am?\nA mail carrier!\n\nWho am I?\nTry to guess if you can.\nI grow the food that people eat.\nNow who do you think I am?\nA farmer!\n\nWho am I?\nTry to guess if you can.\nI help you when you’re hurt or sick.\nNow who do you think I am?\nA doctor!\n\nWho am I?\nTry to guess if you can.\nI help you when you don’t feel well.\nNow who do you think I am?\nA nurse!\n\nWho am I?\nTry to guess if you can.\nI come to put big fires out.\nNow who do you think I am?\nA firefighter!\n\nWho am I?\nTry to guess if you can.\nI help you walk across the street.\nNow who do you think I am?\nA police officer!\n\nWho am I?\nTry to guess if you can.\nI take you where you want to go.\nNow who do you think I am?\nA bus driver!\n\nWho am I?\nTry to guess if you can.\nI teach you things you need to know.\nNow who do you think I am?\nA teacher!" },
+            { title: "3. The Firefighters", text: "The fire burns up,\nhigher and higher.\nThe people cry out,\n“Fire! There’s fire!”\n\nThe firefighters hurry,\nquicker and quicker.\nThe fire truck drives,\nfaster and faster.\n\nThe ladder goes up,\nhigher and higher.\nThe water comes out,\nover and over.\n\nThe people walk by,\nslower and slower.\nThe fire burns down,\nlower and lower." },
+            { title: "4. The Mail Carrier’s Song", text: "Down the street, house to house,\nI’ll skip one step or two.\nI’ll whistle and sing.\nI’ll whistle as I bring\nsome letters just for you!\n\nMake some pretty birthday cards—\nadd and white, pink, or blue!\nI’ll quickly carry them.\nI’ll take them to your friends.\nI’ll do it just for you!" },
+            { title: "5. All Through the Town", text: "The wipers on the bus move left and right,\nleft and right, left and right.\nThe wipers on the bus move left and right,\nall through the town.\n\nThe tires on the bus go around and around,\naround and around, around and around.\nThe tires on the bus go around and around,\nall through the town.\n\nThe doors on the bus swing open and shut,\nopen and shut, open and shut.\nThe doors on the bus swing open and shut,\nall through the town.\n\nThe people on the bus get on and off,\non and off, on and off.\nThe people on the bus get on and off,\nall through the town.\n\nThe driver on the bus says, “Move on back,\nmove on back, move on back.”\nThe driver on the bus says, “Move on back,”\nall through the town.\n\nThe children on the bus bounce up and down,\nup and down, up and down.\nThe children on the bus bounce up and down,\nall through the town." },
+            { title: "6. I Always Like Today!", text: "Yesterday was Monday.\nIt was a very good day!\nToday is Tuesday.\nToday is my favorite day!\nWhat day will it be tomorrow?\nWednesday! Hurray!\nWhich day do you like the most?\nI always like today!\n\nYesterday was Monday.\nIt was a very good day!\nToday is Tuesday.\nToday is my favorite day!\nWhat day will it be tomorrow?\nWednesday! Hurray!\nWhich day do you like the most?\nI always like today!\nYes, I always like today! Hurray!" },
+            { title: "7. Do You Know Why?", text: "Why is she reading a book?\nBecause she likes to read!\n\nWhy is he big and strong?\nBecause he is a man!\n\nWhy are they running fast?\nBecause they want to swim!\n\nWhy does she wear a dress?\nBecause she is a girl!\n\nWhy do they want the ball?\nSo they can play a game!\n\nWhy does he have a car?\nSo he can go to work.\n\nWhy do you have two eyes?\nSo you can see your friends!\n\nWhy do I have ten fingers?\nHmm… I guess I don’t know why!" },
+            { title: "8. Yes, We Are!", text: "What are you doing?\nAre you coloring in your books?\nNo, we aren’t. We are not!\nAre you writing in your workbooks?\nYes, we are!\nWe are writing in our workbooks.\n\nWhat are you doing?\nAre you riding in a school bus?\nNo, we aren’t. We are not!\nAre you riding in a boat?\nYes, we are!\nWe are riding in a boat.\n\nWhat are you doing?\nAre you watching a train go by?\nNo, we aren’t. We are not!\nAre you watching your father on his tractor?\nYes, we are!\nWe are watching our father on his tractor.\n\nWhat are you doing?\nAre you running in the yard?\nNo, we aren’t. We are not!\nAre you walking across the street?\nYes, we are!\nWe are walking across the street.\n\nWhat are you doing?\nAre you riding on a tricycle?\nNo, we aren’t. We are not!\nAre you flying in an airplane?\nYes, we are!\nWe are flying in an airplane.\n\nWhat are you doing?\nAre you swimming in the pool?\nNo, we aren’t. We are not!\nAre you playing near your house?\nYes, we are!\nWe are playing near our house." },
+            { title: "9. Teacher Says", text: "List 1\nPoint to your chair.\nHide your eyes.\nTiptoe.\nTouch your knees.\nPinch your nose.\nSneeze.\nDrive a car.\nQuickly turn around.\nYawn.\nRub your head.\nPull on your hair.\nLook under your left arm.\nLook through your fingers.\nWiggle your fingers.\nWave goodbye.\n\nList 2\nKick your right foot.\nScratch your leg.\nTouch your back.\nPush your nose.\nShake your arm.\nPoint to the clock.\nHop on one foot.\nTouch the floor.\nHide your chin.\nPut your hand over your head.\nSlowly raise your right hand.\nQuickly raise your right hand.\nLook behind you.\nShow me your teeth.\nCry." },
+            { title: "10. Doctor", text: "I see the doctor.\nThe doctor sees me.\nHe looks into my eye.\nNow, what does he see?" },
+            { title: "11. Quickly", text: "A red fire truck\ndrives quickly by.\nIt’s off to the fire,\nburning so high." },
+            { title: "12. Pink", text: "I have a baby mouse.\nHe’s very, very pink!\nHis ears are pink.\nHe has a pink nose.\nHis eyes are pink.\nWhat do you think?\nWhat makes him pink?\nNobody knows!\n\nI have a baby rabbit.\nShe’s very, very pink!\nHer ears are pink.\nShe has a pink nose.\nHer eyes are pink.\nWhat do you think?\nWhat makes her pink?\nNobody knows!" },
+            { title: "13. Eight", text: "I can count\neight airplanes\nin the sky.\n\nI can count\neight trucks\nas they’re\ndriving by.\n\nI can count\neight children\non the train.\n\nI can count\neight clouds\nwith eight drops\nof rain.\n\n1, 2, 3, 4, 5,\n6, 7, 8.\nI can\ncount to eight." },
+            { title: "14. Too Much Pink!", text: "I live in a town where the people are pink.\nPink people live in pink houses!\nPink drivers drive pink buses.\nMost of the people like to ride pink tricycles.\nThey don’t wear shoes, so you can see their pink feet!\nCars and boats are pink,\nand so are airplanes and trains.\nFarmers drive pink tractors.\nThey grow pink food on their farms.\nFirefighters wear pink hats and coats.\nTheir trucks are pink—from top to bottom!\nThey use pink water to put out pink fires.\nMailboxes are pink,\nand pink mail carriers bring pink letters,\nenvelopes, and boxes.\nThe school is pink,\nand so are the teachers.\nPink children swim in a pink swimming pool!\nPink doctors and nurses\nhelp pink boys and girls.\nPink police officers are nice\nto all the pink people.\nSome people say there’s too much pink!\nWhat do you think?" },
+            { title: "15. Right Now!", text: "What do you see?\nI see a fire!\nWhere is the fire?\nThe fire’s at my house!\nWho do you want?\nI want a firefighter!\nWhy do you want him?\nTo put out the fire!\nWhen do you need him?\nRight NOW!\n\nWhat do you see?\nI see a letter.\nWhere is the letter?\nThe letter’s on the table.\nWho do you want?\nI want a mail carrier.\nWhy do you want him?\nTo take the mail.\nWhen do you need him?\nRight NOW!\n\nWhat do you see?\nI see a bus.\nWhere is the bus?\nThe bus is at my school.\nWho do you want?\nI want a bus driver!\nWhy do you want him?\nTo take me home.\nWhen do you need him?\nRight NOW!\n\nWhat do you see?\nI see two cars.\nWhere are the cars?\nThe cars are in the street.\nWho do you want?\nI want a police officer.\nWhy do you want him?\nTo help the drivers.\nWhen do you need him?\nRight NOW!\n\nWhat do you see?\nI see me!\nWhere are you?\nI’m in my bed.\nWho do you want?\nI want a doctor.\nWhy do you want him?\nTo make me well.\nWhen do you need him?\nRight NOW!\n\nWhat do you see?\nI see a teacher.\nWhere is your teacher?\nRight here!\nWho is your teacher?\nMiss Smith.\nWhy do you need her?\nTo teach me English.\nWhen do you need her?\nRight NOW!" },
+            { title: "16. Marvin’s Friends", text: "Today I am going to see some of my friends at the zoo.\nI am a big monkey!\nBut the chimpanzee is bigger.\nAnd the gorilla is the biggest one of all!\n\nThe swallow is small.\nBut the butterfly is smaller.\nAnd the bee is the smallest one of all!\n\nThe fish is long.\nThe snake is longer.\nAnd the alligator is the longest one of all!\n\nThe zebra is tall.\nBut the elephant is taller.\nAnd the giraffe is the tallest one of all!\n\nThe cat is loud!\nThe dog is louder.\nAnd the lion is the loudest one of all!\n\nThe panda is slow.\nBut the turtle is slower.\nAnd the caterpillar is the slowest one of all.\n\nHere they have started to race.\nThe bear is fast.\nThe kangaroo is faster.\nAnd the tiger is the fastest one of all!\n\nThe race is about to finish.\nThe tiger is first.\nThe kangaroo is next.\nAnd the bear is last!\n\nThe gorilla is on the ground.\nI climb on top of him.\nThen the chimpanzee jumps on top of me!\n\nThe chimpanzee is on the top.\nI’m in the middle.\nAnd the gorilla is on the bottom!\nDo you think we make a funny sandwich?" },
+            { title: "17. Water Play at Gorilla School", text: "Today, we have water play at school.\nThe little gorillas are going to have fun.\nThe gorillas get to swim in the swimming pool.\n“Whose towel is this?” asked one of the gorillas.\n“It’s not mine,” said Gary.\n“Who has a yellow towel?”\n“I do!” said little Gracie.\n\nThey put up their shoes and socks.\nThen they jumped into the water.\n“Whose ball is this?” Gary asked.\n“It’s mine,” said Gracie.\n“Who wants to play ball?” she asked.\n“We do!” said her friends.\n\n“Look out!” yelled one gorilla\nas he started to jump.\n“Here I come!” yelled another gorilla.\n\nThe little gorillas had so much fun.\nThen it was time to get out of the water.\nThey shook their bodies to get dry.\n\n“Whose shoes are these?” Gary asked.\n“They’re mine,” said Gracie.\n“And who wears pink socks?”\n“I do,” said Gracie.\n\nNow there were only two socks and two shoes.\n“Whose socks are these?” Gary asked.\n“And who wears these shoes?”\nOne of his friends said,\n“Gary, you are the only one who has no shoes and socks!”\nGary looked down at his feet.\n“Oh, they are my shoes and socks!” he said.\n\nThen he started to laugh.\nAll the other gorillas laughed too." },
+            { title: "18. Jonny Bear Likes the Weather", text: "Jonny Bear likes the weather all the time.\nWhen it’s cold, Jonny goes outside.\nHe has a warm coat,\nbut he doesn’t go outside without a jacket.\nHe likes snow and wind.\nHe doesn’t shiver,\nand he doesn’t get sick.\nHe makes a snowman\nand throws snowballs.\nSometimes he falls off his sled!\n\nWhen the snow goes away,\nthe weather gets warm.\nThen flowers grow.\nSometimes it is cloudy,\nand rain falls from the clouds.\nAnd sometimes Jonny sees a rainbow!\n\nThen the weather gets hot.\nIt is sunny much of the time.\nJonny and his friends jump in the pool\nand get all wet!\nThey have fun together!\nWhen they get out,\nthey shake their bodies to get dry.\n\nWhen the weather gets cool,\nJonny has a birthday.\nChildren come to his party.\nThey blow up balloons.\nHe bends over to blow out\nthe candles on his cake.\nDo you see the presents\nwith ribbons on them?\nFirst, Jonny got a yo-yo\nand a ball to bounce.\nNext, he got a puppet.\nAnd last, he got a teddy bear.\nBut he did NOT get a doll!\n\nJonny likes cold and snowy weather.\nHe likes hot and rainy weather.\nHe likes cool and windy weather.\nHe likes noon,\nwhen the sun is bright and warm.\nHe likes evening,\nwhen the sun goes down.\nHe likes night,\nwhen it is dark\nand he can see the moon and the stars.\n\nJonny Bear thinks about the weather.\nIt is always different.\nIt is never the same.\nJonny is happy all the time!" },
+            { title: "19. Let’s Start Reading", text: "It is big.\nIt is a big dog.\nIt is red.\nIt is a red cat.\n\nMy dog is big.\nMy dog is red.\nMy dog and I have fun.\nWe have fun.\n\nRun, dog, run.\nRun to me!\nCan he run?\nYes, he can.\n\nCan my dog fly?\nNo, he can’t.\nMy dog can jump.\nYes, he can.\n\nJump, dog, jump.\nJump to me!\nMy dog runs.\nMy dog jumps.\n\nThe ball is red.\nThe red ball is big.\n\nThe cat is on the ball.\nIt is on the big ball.\n\nThe cat has a bed.\nThe cat has a red bed.\nWill the cat go to bed?\nYes, the cat is in bed.\n\nI run to my dog.\nMy dog runs to me.\n\nIs my dog nice?\nYes, my dog is nice.\n\nIs the cat nice?\nIs it a nice cat?\n\nI will get a cat.\nI will get a nice cat.\n\nI have a red dog.\nI want a red cat.\n\nWill I get a red cat?\nIf I can, I will." }
+        ];
+
+        const buttonList = document.getElementById('button-list');
+        const readingBox = document.getElementById('reading-box');
+        const synth = window.speechSynthesis;
+        let preferredVoice = null;
+        let speechAllowed = false;
+
+        function setPreferredVoice() {
+            const voices = synth.getVoices();
+            preferredVoice = voices.find(v => v.lang === 'en-US' && (v.name.includes('Google') || v.name.includes('Samantha'))) || 
+                             voices.find(v => v.lang === 'en-US') || 
+                             voices[0];
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = setPreferredVoice;
+        }
+
+        function enableAudioOniOS() {
+            if (!speechAllowed) {
+                const initialUtterance = new SpeechSynthesisUtterance("");
+                synth.speak(initialUtterance);
+                speechAllowed = true;
+            }
+        }
+        
+        document.body.addEventListener('touchstart', enableAudioOniOS, { passive: true });
+        document.body.addEventListener('click', enableAudioOniOS);
+
+        function init() {
+            buttonList.innerHTML = '';
+            stories.forEach((story, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'story-btn';
+                btn.innerText = story.title;
+                btn.onclick = () => loadStory(index);
+                buttonList.appendChild(btn);
+            });
+            loadStory(0);
+            setPreferredVoice();
+        }
+
+        function loadStory(index) {
+            const buttons = document.querySelectorAll('.story-btn');
+            buttons.forEach((btn, i) => btn.classList.toggle('active', i === index));
+
+            readingBox.innerHTML = '';
+            const lines = stories[index].text.split('\n');
+
+            lines.forEach(line => {
+                if (line.trim() === "") {
+                    readingBox.appendChild(document.createElement('br'));
+                    return;
+                }
+                const lineDiv = document.createElement('div');
+                const parts = line.split(/(\s+)/); 
+
+                parts.forEach(part => {
+                    if (part.trim() === "") {
+                        lineDiv.appendChild(document.createTextNode(part));
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = 'word';
+                        span.innerText = part;
+
+                        let lastTap = 0;
+
+                        // Touch Path for Mobile Devices
+                        span.addEventListener('touchend', function(e) {
+                            const currentTime = new Date().getTime();
+                            const tapLength = currentTime - lastTap;
+                            if (tapLength < 300 && tapLength > 0) {
+                                e.preventDefault();
+                                speak(part, span);
+                            }
+                            lastTap = currentTime;
+                        });
+
+                        // Click Path for Desktop
+                        span.addEventListener('click', function(e) {
+                            if (e.pointerType !== 'touch') {
+                                speak(part, span);
+                            }
+                        });
+
+                        span.addEventListener('contextmenu', e => e.preventDefault());
+                        lineDiv.appendChild(span);
+                    }
+                });
+                readingBox.appendChild(lineDiv);
+            });
+            readingBox.scrollTop = 0;
+        }
+
+        function speak(word, element) {
+            document.querySelectorAll('.word.playing').forEach(el => el.classList.remove('playing'));
+            synth.cancel();
+
+            const cleanWord = word.replace(/[.,!?;:””’\"“\"]/g, "");
+            const utterance = new SpeechSynthesisUtterance(cleanWord);
+            
+            utterance.rate = 0.65; 
+            utterance.pitch = 1.1;
+            
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                utterance.lang = 'en-US';
+            }
+
+            utterance.onstart = () => element.classList.add('playing');
+            utterance.onend = () => element.classList.remove('playing');
+            
+            synth.speak(utterance);
+        }
+
+        init();
+    </script>
+</body>
+</html>
